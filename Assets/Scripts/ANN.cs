@@ -139,8 +139,16 @@ public class ANN
         }
     }
 
-    private double ActivationFunction(double d)
+    private double ActivationFunction(double value) => Sigmoid(value);
+
+
+    // logistical softstep
+    double Sigmoid(double value)
     {
-        throw new System.NotImplementedException();
+        double k = (double)System.Math.Exp(value);
+        return k / (1 + k); 
     }
+
+    double Step(double value) => value < 0 ? 0 : 1; // binary step
+
 }
