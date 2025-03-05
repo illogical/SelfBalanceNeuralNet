@@ -50,6 +50,8 @@ public class ANN
             return outputs;
         }
 
+        inputs = new List<double>(inputValues);
+
         for (int layerIndex = 0; layerIndex < NumHidden + 1; layerIndex++)  // all hidden layers + the output layer
         {
             // set the input layer to the previous layer's outputs
@@ -65,7 +67,7 @@ public class ANN
                 Layers[layerIndex].Neurons[neuronIndex].Inputs.Clear();
 
                 // fill inputs with outputs from the previous layer
-                for (int inputIndex = 0; inputIndex < NumInputs; layerIndex++)
+                for (int inputIndex = 0; inputIndex < Layers[layerIndex].Neurons[neuronIndex].NumInputs; inputIndex++)
                 {
                     Layers[layerIndex].Neurons[neuronIndex].Inputs.Add(inputs[inputIndex]);
                     // What a typical perceptron does is multiply the weights by the inputs and sums them.
@@ -106,6 +108,7 @@ public class ANN
                 {
                     Layers[i].Neurons[j].ErrorGradient =
                         Layers[i].Neurons[j].Output * (1 - Layers[i].Neurons[j].Output);
+                    
                     double errorGradientSum = 0;
                     for (int p = 0; p < Layers[i + 1].NumNeurons; p++)
                     {
@@ -113,7 +116,7 @@ public class ANN
                     }
                     Layers[i].Neurons[j].ErrorGradient *= errorGradientSum;
 
-                    for (int k = 0; k < Layers[i].Neurons[k].NumInputs; k++)
+                    for (int k = 0; k < Layers[i].Neurons[j].NumInputs; k++)
                     {
                         // output layer
                         if (i == NumHidden)
@@ -129,7 +132,7 @@ public class ANN
                             // The learning rate is a hyperparameter that determines how much the network learns in each iteration.
                             // A lower learning rate may lead to slower convergence, but it may also help the network to find a better solution.
                             // A higher learning rate may lead to faster convergence, but it may also make the network more sensitive to small changes in the input data.
-                            Layers[i].Neurons[j].Weights[k] += Alpha * Layers[i].Neurons[j].Inputs[k] * Alpha *
+                            Layers[i].Neurons[j].Weights[k] += Alpha * Layers[i].Neurons[j].Inputs[k] *
                                                                Layers[i].Neurons[j].ErrorGradient;
                         }
                         Layers[i].Neurons[j].Bias += Alpha * -1 * Layers[i].Neurons[j].ErrorGradient;
@@ -141,12 +144,12 @@ public class ANN
 
     private double ActivationFunction(double value) => Sigmoid(value);
 
-
+ 
     // logistical softstep
     double Sigmoid(double value)
     {
         double k = (double)System.Math.Exp(value);
-        return k / (1 + k); 
+        return k / (1.0f + k); 
     }
 
     double Step(double value) => value < 0 ? 0 : 1; // binary step
